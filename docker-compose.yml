@@ -1,0 +1,47 @@
+﻿services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: technova-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./app/src/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - technova-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: technova-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: ${PORT}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - technova-network
+
+volumes:
+  postgres_data:
+
+networks:
+  technova-network:
+    driver: bridge

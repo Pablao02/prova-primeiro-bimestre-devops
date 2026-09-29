@@ -1,0 +1,6 @@
+﻿CREATE TABLE IF NOT EXISTS reservas (
+    id SERIAL PRIMARY KEY,
+    cliente VARCHAR(150) NOT NULL,
+    data TIMESTAMP NOT NULL,
+    status VARCHAR(50) NOT NULL
+);

@@ -1,0 +1,60 @@
+﻿name: prova-primeiro-bimestre-devops
+services:
+  api:
+    build:
+      context: C:\Users\Pablo\OneDrive\Desktop\prova-primeiro-bimestre-devops\app
+      dockerfile: Dockerfile
+    container_name: technova-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+        required: true
+    environment:
+      DB_HOST: postgres
+      DB_NAME: technova
+      DB_PASSWORD: technova_dev
+      DB_PORT: "5432"
+      DB_USER: technova
+      PORT: "3000"
+    networks:
+      technova-network: null
+    ports:
+      - mode: ingress
+        target: 3000
+        published: "3000"
+        protocol: tcp
+    restart: unless-stopped
+  postgres:
+    container_name: technova-postgres
+    environment:
+      POSTGRES_DB: technova
+      POSTGRES_PASSWORD: technova_dev
+      POSTGRES_USER: technova
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U technova -d technova
+      timeout: 5s
+      interval: 5s
+      retries: 10
+    image: postgres:16-alpine
+    networks:
+      technova-network: null
+    restart: unless-stopped
+    volumes:
+      - type: volume
+        source: postgres_data
+        target: /var/lib/postgresql/data
+        volume: {}
+      - type: bind
+        source: C:\Users\Pablo\OneDrive\Desktop\prova-primeiro-bimestre-devops\app\src\init.sql
+        target: /docker-entrypoint-initdb.d/init.sql
+        read_only: true
+        bind: {}
+networks:
+  technova-network:
+    name: prova-primeiro-bimestre-devops_technova-network
+    driver: bridge
+volumes:
+  postgres_data:
+    name: prova-primeiro-bimestre-devops_postgres_data
