@@ -29,3 +29,21 @@ variable "admin_cidr" {
   type        = string
   default     = "0.0.0.0/0"
 }
+
+variable "db_name" {
+  description = "Nome do banco PostgreSQL"
+  type        = string
+  default     = "reservas"
+}
+
+variable "db_username" {
+  description = "Usuario do banco PostgreSQL"
+  type        = string
+  default     = "admin"
+}
+
+variable "db_password" {
+  description = "Senha do banco PostgreSQL"
+  type        = string
+  sensitive   = true
+}
