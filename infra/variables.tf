@@ -24,3 +24,8 @@ variable "azs" {
     "us-east-1b"
   ]
 }
+variable "admin_cidr" {
+  description = "CIDR permitido para acesso SSH"
+  type        = string
+  default     = "0.0.0.0/0"
+}
